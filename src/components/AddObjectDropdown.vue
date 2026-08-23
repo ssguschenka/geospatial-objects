@@ -3,13 +3,16 @@ import { ref } from 'vue'
 
 const isOpen = ref(false)
 
-const emit = defineEmits(['select'])
-const objects = [
+const emit = defineEmits<{select: [type: ObjectType];}>();
+
+const objects: {type: ObjectType, label: string}[] = [
   { type: 'house', label: "Дом" },
   { type: 'plot', label: "Участок" }
 ]
 
-function selectObject(type: string) {
+type ObjectType = "house" | "plot";
+
+function selectObject(type: ObjectType) {
   emit('select', type)
   isOpen.value = false
 }

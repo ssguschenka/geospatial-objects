@@ -1,23 +1,15 @@
 <template>
   <div class="panel">
-  <AddObjectDropdown @select="addObject"/>
+  <AddObjectDropdown @select="handleObjectSelect"/>
   </div>
 </template>
 
 <script setup lang="ts">
 import AddObjectDropdown  from "./AddObjectDropdown.vue"
-import {Draw} from "ol/interaction";
+const emit = defineEmits<{selectObject: [type: "house" | "plot"]}>();
 
-function addObject (type: string) {
-  console.log(type)
-
-  if (type) {
-    const draw = new Draw({
-      source: vectorSource,
-      type: 'Polygon',
-    })
-    map.addInteraction(draw)
-  }
+function handleObjectSelect (type: "house" | "plot") {
+  emit("selectObject", type)
 }
 </script>
 
