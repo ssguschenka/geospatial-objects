@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import type { ObjectType } from "@/types.ts";
 
 const isOpen = ref(false)
 
@@ -9,8 +10,6 @@ const objects: {type: ObjectType, label: string}[] = [
   { type: 'house', label: "Дом" },
   { type: 'plot', label: "Участок" }
 ]
-
-type ObjectType = "house" | "plot";
 
 function selectObject(type: ObjectType) {
   emit('select', type)

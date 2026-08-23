@@ -6,9 +6,11 @@
 
 <script setup lang="ts">
 import AddObjectDropdown  from "./AddObjectDropdown.vue"
-const emit = defineEmits<{selectObject: [type: "house" | "plot"]}>();
+import type { ObjectType } from "@/types.ts";
 
-function handleObjectSelect (type: "house" | "plot") {
+const emit = defineEmits<{selectObject: [type: ObjectType]}>();
+
+function handleObjectSelect (type: ObjectType) {
   emit("selectObject", type)
 }
 </script>
@@ -20,7 +22,6 @@ function handleObjectSelect (type: "house" | "plot") {
   align-items: center;
   grid-row: 1 / 3;
   grid-column: 1;
-  //border: 2px solid #2563;
   padding: 20px;
 }
 </style>
