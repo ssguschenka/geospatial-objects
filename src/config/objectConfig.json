@@ -1,0 +1,83 @@
+{
+  "house": {
+    "title": "Дом",
+    "fields": [
+      {
+        "name": "cadastralNumber",
+        "label": "Кадастровый номер",
+        "type": "text",
+        "required": true,
+        "mask": "##:##:#######:####",
+        "validation": {
+          "pattern": "^\\d{2}:\\d{2}:\\d{7}:\\d{4}$"
+        }
+      },
+      {
+        "name": "floors",
+        "label": "Этажность",
+        "type": "number"
+      },
+      {
+        "name": "wallMaterial",
+        "label": "Материал стен",
+        "type": "select",
+        "options": [
+          { "label": "Кирпич", "value": "brick" },
+          { "label": "Панель", "value": "panel" },
+          { "label": "Монолит", "value": "monolith" },
+          { "label": "Дерево", "value": "wood" }
+        ]
+      },
+      {
+        "name": "area",
+        "label": "Площадь",
+        "type": "number"
+      }
+    ]
+  },
+  "land": {
+    "title": "Земельный участок",
+    "fields": [
+      {
+        "name": "cadastralNumber",
+        "label": "Кадастровый номер",
+        "type": "text",
+        "required": true,
+        "mask": "##:##:#######:####",
+        "validation": {
+          "pattern": "^\\d{2}:\\d{2}:\\d{7}:\\d{4}$"
+        }
+      },
+      {
+        "name": "area",
+        "label": "Площадь",
+        "type": "number"
+      },
+      {
+        "name": "category",
+        "label": "Категория земли",
+        "type": "select",
+        "options": [
+          { "label": "Сельхозназначение", "value": "agriculture" },
+          { "label": "Населенные пункты", "value": "settlement" },
+          { "label": "Промышленное", "value": "industrial" }
+        ]
+      },
+      {
+        "name": "allowedUsage",
+        "label": "Разрешенное использование",
+        "type": "text"
+      },
+      {
+        "name": "ownershipType",
+        "label": "Тип собственности",
+        "type": "select",
+        "options": [
+          { "label": "Частная", "value": "private" },
+          { "label": "Государственная", "value": "state" },
+          { "label": "Муниципальная", "value": "municipal" }
+        ]
+      }
+    ]
+  }
+}

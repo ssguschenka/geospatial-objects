@@ -10,7 +10,7 @@ body {
   height: 100%;
   display: grid;
   grid-template-rows: auto 1fr;
-  grid-template-columns: 20% 1fr;
+  grid-template-columns: 25% 1fr;
   grid-gap: 1rem;
   padding: 1rem;
 }

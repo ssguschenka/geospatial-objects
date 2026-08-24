@@ -1,23 +1,3 @@
-<script setup lang="ts">
-import { ref } from 'vue'
-import type { ObjectType } from "@/types.ts";
-
-const isOpen = ref(false)
-
-const emit = defineEmits<{select: [type: ObjectType];}>();
-
-const objects: {type: ObjectType, label: string}[] = [
-  { type: 'house', label: "Дом" },
-  { type: 'plot', label: "Участок" }
-]
-
-function selectObject(type: ObjectType) {
-  emit('select', type)
-  isOpen.value = false
-}
-
-</script>
-
 <template>
   <div class="dropdown">
     <button class="addButton" @click="isOpen = !isOpen">
@@ -37,16 +17,36 @@ function selectObject(type: ObjectType) {
   </div>
 </template>
 
+<script setup lang="ts">
+import { ref } from 'vue'
+import type { ObjectType } from "@/types.ts";
+
+const isOpen = ref(false)
+
+const objects: {type: ObjectType, label: string}[] = [
+  { type: 'house', label: "Дом" },
+  { type: 'land', label: "Участок" }
+]
+
+const emit = defineEmits<{select: [type: ObjectType]}>();
+
+function selectObject(type: ObjectType) {
+  emit('select', type)
+  isOpen.value = false
+}
+</script>
 
 
 <style scoped>
 .dropdown {
-  display: inline-block;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   width: 100%;
 }
 
 .addButton {
-  width: 100%;
+  width: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -64,6 +64,7 @@ function selectObject(type: ObjectType) {
 }
 
 .dropdown-content {
+  width: 50%;
   display: flex;
   flex-direction: column;
   padding: 10px;
