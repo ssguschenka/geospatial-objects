@@ -14,21 +14,22 @@ import { RouterLink, RouterView } from 'vue-router'
 <style scoped>
 .nav-bar {
   grid-row: 1;
-  grid-column: 2;
+  grid-column: 1 / 3;
   display: flex;
   justify-content: end;
-  gap: 3%;
-  padding: 0 3%;
+  gap: 5%;
+  padding: 1% 5%;
+  background-color: rgb(72 140 164 / 0.1);
 }
 
 .nav-link {
   text-decoration: none;
   color: #1f3436;
-  padding: 5px 15px;
+  padding: 6px 20px;
   border-radius: 5px;
   border: 1px solid #2563;
   font-family: "Roboto", sans-serif;
-  font-size: 14px;
+  font-size: 20px;
 }
 
 .nav-link:hover {
