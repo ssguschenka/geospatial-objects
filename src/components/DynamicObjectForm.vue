@@ -80,8 +80,10 @@ const emit = defineEmits<{
 const config = computed(() => {
   const typedConfig = objectConfig as ObjectConfig;
   return typedConfig[props.objectType];
-
 });
+
+//создаем рееактивный обьект формы- он пока пустой
+const formData = reactive<Record<string, unknown>>({});
 
 const errors = reactive<Record<string, string>>({});
 
@@ -115,8 +117,6 @@ const validateForm = () => {
   return isValid;
 }
 
-//создаем рееактивный обьект формы- он пока пустой
-const formData = reactive<Record<string, unknown>>({});
 
 const handleSubmit =  () => {
   if(!validateForm()){

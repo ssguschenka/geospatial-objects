@@ -6,12 +6,14 @@ import type { ObjectType } from "@/types.ts";
 import {ref} from "vue";
 import {Feature} from "ol";
 import {Geometry} from "ol/geom";
+import GeoJSON from "ol/format/GeoJSON";
+import {useObjectsStore} from "@/stores/objects.ts";
 
-// Функция с логикой рисования полигонов на карте
+// Функция с логикой рисования и удаления полигонов на карте
 export function useDrawing() {
   const drawSource = new VectorSource();
 
-  const drawLayer =new VectorLayer({
+  const drawLayer = new VectorLayer({
     source: drawSource,
   });
 
@@ -46,18 +48,48 @@ export function useDrawing() {
     // при завершении рисования полигона - удаляем draw
     newDraw.on("drawend", (event) => {
       console.log("нарисован", event.feature);
-      selectedFeature.value = event.feature; //нарисованный обьект
+      selectedFeature.value = event.feature as Feature<Geometry>; //нарисованный обьект
 
       map.removeInteraction(newDraw);
       draw = null;
     });
   }
 
+  // удаление полигона с карты
+  function cancelDrawing() {
+    if(selectedFeature.value) {
+      drawSource.removeFeature(selectedFeature.value  as Feature<Geometry>);
+      selectedFeature.value = null;
+    }
+  }
+
+
+  const geoJson = new GeoJSON();
+  const objectsStore = useObjectsStore();
+
+  // восстанавливаем нарисованные полигоны на карте
+  function restoreObjectsOnMap() {
+    objectsStore.objects.forEach((object) => {
+      const feature = new Feature({
+        geometry: geoJson.readGeometry(object.geometry),
+      })
+
+      feature.setProperties({
+        objectId: object.id,
+        type: object.type,
+      })
+
+      drawSource.addFeature(feature)
+    })
+  }
+
   return {
     drawLayer,
     startObjectDrawing,
     selectedFeature,
-    selectedObjectType
+    selectedObjectType,
+    cancelDrawing,
+    restoreObjectsOnMap
   }
 }
 
