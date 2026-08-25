@@ -33,7 +33,7 @@ export const useObjectsStore = defineStore('objects', () => {
     }
 
     object.visible = !object.visible
-  };
+  }
 
   return { objects, addObject, removeObject, toggleObjectVisibility, getObjectById}
 })

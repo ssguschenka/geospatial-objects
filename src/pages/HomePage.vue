@@ -44,7 +44,7 @@ function handleDrawingFinished(payload: {
 function submitForm(data: ObjectData) {
   if (!selectedFeature.value || !selectedObjectType.value) {
     return;
-  };
+  }
 
   const geometry = geoJson.writeGeometryObject(
     selectedFeature.value.getGeometry()!
