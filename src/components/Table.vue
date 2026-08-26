@@ -13,6 +13,7 @@
     <tr
       v-for="object in objectsStore.objects"
       :key="object.id"
+      @click="selectRow(object.id)"
     >
       <td>{{ object.cadastralNumber }}</td>
       <td>{{ object.area }}</td>
@@ -28,18 +29,19 @@
 <script setup lang="ts">
 
 import {useObjectsStore} from "@/stores/objects.ts";
-import type {ObjectType} from "@/types.ts";
+import {objectTypeLabels} from "@/constants/ObjectLabels.ts";
 
 const objectsStore = useObjectsStore();
-
-// для отображения в таблице названий обьектов на русском
-const objectTypeLabels: Record<ObjectType, string> = {
-  house: 'Дом',
-  land: 'Участок',
-};
+const emit = defineEmits<{select: [id: string]}>();
 
 function toggleObjectVisibility(id: string) {
   objectsStore.toggleObjectVisibility(id)
+}
+
+// Клик на строку в таблице
+function selectRow(id: string) {
+  console.log(objectsStore.getObjectById(id))
+  emit("select", id);
 }
 
 </script>

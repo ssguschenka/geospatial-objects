@@ -1,5 +1,10 @@
 <template>
-  <SidebarView @select-object="startDrawing" @cancel="cancelForm" @submit="submitForm" :is-form-open="isFormOpen" :object-type="selectedObjectType" />
+  <SidebarView @select-object="startDrawing"
+               @cancel="cancelForm"
+               @submit="submitForm"
+               :is-form-open="isFormOpen"
+               :object-type="selectedObjectType"
+               @select-object-row="handleSelectObjectRow"/>
   <MapView ref="mapRef" @drawing-finished="handleDrawingFinished"/>
 </template>
 
@@ -74,6 +79,11 @@ function cancelForm() {
   mapRef.value.cancelObjectDrawing();
   selectedFeature.value = null;
   selectedObjectType.value = null;
+}
+
+// при выборе строки в таблице - центрируем карту на объекте
+function handleSelectObjectRow(id: string) {
+  mapRef.value.centerMapOnObject(id);
 }
 
 </script>

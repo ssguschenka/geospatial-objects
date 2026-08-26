@@ -32,7 +32,7 @@ export type ObjectConfigItem = {
 
 export type ObjectData = {
   area: number;
-  cadastralNumber: number;
+  cadastralNumber: string;
   floors?: number;
   wallMaterial?: WallMaterial;
   category?: Category;

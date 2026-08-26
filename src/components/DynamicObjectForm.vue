@@ -67,6 +67,7 @@
 import { computed, reactive } from "vue";
 import objectConfig from "../config/objectConfig.json"
 import type { ObjectType, ObjectConfig } from "@/types.ts";
+import {useObjectsStore} from "@/stores/objects.ts";
 
 const props = defineProps<{
   objectType: ObjectType,
@@ -87,7 +88,9 @@ const formData = reactive<Record<string, unknown>>({});
 
 const errors = reactive<Record<string, string>>({});
 
-// Проверяем required и pattern при submit
+const objectStore = useObjectsStore();
+
+// Проверяем required, pattern и кадастровый номер на уникальность при submit
 const validateForm = () => {
   Object.keys(errors).forEach((key) => {
     delete errors[key]; // Очищаем предыдущие ошибки
@@ -97,6 +100,7 @@ const validateForm = () => {
 
   for (const field of config.value.fields) {
     const value = formData[field.name];
+
     // проверяем что обязательное поле не пустое
     if (field.required && !value) {
       errors[field.name] = 'Поле обязательно для заполнения';
@@ -111,13 +115,20 @@ const validateForm = () => {
       if (!regex.test(String(value))) {
         errors[field.name] = 'Некорректный формат';
         isValid = false;
+        continue
       }
+    }
+
+    // Проверяем, что кадастровый номер уникален
+    if(field.name === 'cadastralNumber' && objectStore.getObjectByCadastral(String(value))) {
+      errors[field.name] = 'Такой номер уже существует';
+      isValid = false;
     }
   }
   return isValid;
 }
 
-
+// Сохранить обьект
 const handleSubmit =  () => {
   if(!validateForm()){
     return
@@ -125,6 +136,7 @@ const handleSubmit =  () => {
   emit("submit", {...formData});
 };
 
+// Закрыть форму
 const handleCancel =  () => {
   emit("cancel");
 }
@@ -132,6 +144,7 @@ const handleCancel =  () => {
 
 <style scoped>
 .form {
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   inline-size: 100%;
@@ -155,10 +168,15 @@ const handleCancel =  () => {
 .form-field {
   position: relative;
   display: flex;
-  //gap: 1em;
   align-items: center;
   justify-content: space-between;
   inline-size: 100%;
+  min-inline-size: 0;
+}
+
+.form-field label {
+  min-inline-size: 0;
+  overflow-wrap: break-word;
 }
 
 .form-input {
@@ -169,6 +187,7 @@ const handleCancel =  () => {
   inline-size: 60%;
   transition: box-shadow 0.3s;
   font-size: 1em;
+  min-inline-size: 0;
 }
 
 .form-input:focus-visible {

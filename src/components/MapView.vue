@@ -1,10 +1,13 @@
 <template>
   <div ref="mapContainer" class="map-container" >
-    <ObjectDetailsDialog
-      v-if="selectedObject"
-      :object="selectedObject"
-      @close="selectedObject = null"
-    />
+
+    <dialog ref="dialog">
+      <DetailsObjectDialog
+        v-if="selectedObject"
+        :object="selectedObject"
+        @close="closeDialog"
+      />
+    </dialog>
   </div>
 </template>
 
@@ -17,7 +20,7 @@ import TileLayer from 'ol/layer/Tile'
 import OSM from 'ol/source/OSM'
 import {Feature} from "ol";
 import {Geometry} from "ol/geom";
-import ObjectDetailsDialog from "./ObjectDetailsDialog.vue"
+import DetailsObjectDialog from "./DetailsObjectDialog.vue"
 
 import { useDrawing } from "@/composables/useDrawig.ts";
 import 'ol/ol.css'
@@ -45,10 +48,12 @@ const {
   selectedFeature,
   selectedObjectType,
   cancelDrawing,
-  restoreObjectsOnMap
+  restoreObjectsOnMap,
+  centerOnObject
 } = useDrawing();
 
 const selectedObject = ref<MapObject | null>(null);
+const dialog = ref<HTMLDialogElement | null>(null);
 const objectStore = useObjectsStore();
 
 
@@ -72,25 +77,36 @@ onMounted(() => {
     map?.forEachFeatureAtPixel(event.pixel, (feature) => {
       const objectId = feature.get('objectId')
 
-      if (!objectId) {
+      if (!objectId || !isDrawing) {
         return
       }
 
       selectedObject.value = objectStore.getObjectById(objectId) ?? null;
+      dialog.value?.showModal();
     })
   })
   restoreObjectsOnMap()
 });
 
+// Закрываем диалоговое окно
+const closeDialog = () => {
+  dialog.value?.close();
+  selectedObject.value = null;
+};
+
+let isDrawing = true;
+
 // функция рисования полигона, которая вызывается при клике на кнопку выбора обьекта(дом/участок)
 function startDrawing(type: ObjectType) {
   if (!map) return;
   startObjectDrawing(map, type);
+  isDrawing = false;
 }
 
+// При клике в форме "отмена" - полигон удаляется с карты
 function cancelObjectDrawing() {
   if (!map) return;
-  cancelDrawing()
+  cancelDrawing();
 }
 
 // устанавливаем наблюдатель за  за свойством selectedFeature
@@ -100,17 +116,28 @@ watch(selectedFeature, (feature) => {
     return
   }
 
+  isDrawing = true;
   emit('drawingFinished', {
     type: selectedObjectType.value,
     feature: selectedFeature.value as Feature<Geometry>,
   })
 });
 
+// Центрируем карту на выбранном объекте в таблице
+function centerMapOnObject(id: string) {
+  if (!map) {
+    return;
+  }
+
+  centerOnObject(map, id);
+}
+
 
 // делает доступной функции рисования и удаления полигона извне
 defineExpose({
   startDrawing,
   cancelObjectDrawing,
+  centerMapOnObject,
 });
 
 </script>

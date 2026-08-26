@@ -18,8 +18,8 @@
     "ol": "^10.10.0",
     "pinia": "^4.0.2",
     "vue": "rc",
-    "vue-router": "^5.2.0",
-    "vuetify": "^3.13.2"
+    "vue-router": "^4.6.4",
+    "vuetify": "^4.0.1"
   },
   "devDependencies": {
     "@tsconfig/node24": "^24.0.4",

@@ -5,12 +5,14 @@
     <div class="tabs">
       <button
         :class="{ active: selectedType === 'all' }"
+        class="btn"
         @click="selectedType = 'all'"
       >
         Все
       </button>
 
       <button
+        class="btn"
         :class="{ active: selectedType === 'house' }"
         @click="selectedType = 'house'"
       >
@@ -18,6 +20,7 @@
       </button>
 
       <button
+        class="btn"
         :class="{ active: selectedType === 'land' }"
         @click="selectedType = 'land'"
       >
@@ -72,7 +75,7 @@ const filteredObjects = computed(() => {
 
 }
 
-.tabs button {
+.btn {
   padding: 10px 20px;
   border: 1px solid #2563;
   border-radius: 6px;
@@ -82,7 +85,11 @@ const filteredObjects = computed(() => {
   font-size: 1.1em;
 }
 
-.tabs button.active {
+.btn:hover {
+  background: rgb(82 171 206 / 0.73);
+}
+
+.btn.active {
   background: #2563;
 }
 </style>

@@ -83,13 +83,38 @@ export function useDrawing() {
     })
   }
 
+  // Центрируем карту на выбранном объекте в таблице
+  function centerOnObject(map: Map, id: string) {
+    const feature = drawSource.getFeatures().find(
+      feature => feature.get("objectId") === id
+    );
+
+    if (!feature) {
+      console.log("Полигон не найден:", id);
+      return;
+    }
+
+    const geometry = feature.getGeometry();
+
+    if (!geometry) {
+      return;
+    }
+
+    map.getView().fit(geometry.getExtent(), {
+      duration: 400,
+      padding: [50, 50, 50, 50],
+      maxZoom: 15,
+    });
+  }
+
   return {
     drawLayer,
     startObjectDrawing,
     selectedFeature,
     selectedObjectType,
     cancelDrawing,
-    restoreObjectsOnMap
+    restoreObjectsOnMap,
+    centerOnObject
   }
 }
 

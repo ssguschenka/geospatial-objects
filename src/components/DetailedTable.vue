@@ -26,58 +26,40 @@
 
       <td>{{ object.area }}</td>
 
-      <td>{{ object.floors ?? '—' }}</td>
+      <td>{{ object.floors ?? '-' }}</td>
 
       <td>{{
           object.wallMaterial
-            ? objecteWallMaterial[object.wallMaterial]
+            ? objectWallMaterial[object.wallMaterial]
             : '—'
         }}</td>
 
       <td>{{
           object.category
-            ? objectCategory[object.category] : '—' }}</td>
+            ? objectCategory[object.category] : '-' }}</td>
 
-      <td>{{ object.allowedUsage ?? '—' }}</td>
+      <td>{{ object.allowedUsage ?? '-' }}</td>
 
       <td>{{
           object.ownershipType
-          ? objectOwnershipType[object.ownershipType] : '—' }}</td>
+          ? objectOwnershipType[object.ownershipType] : '-' }}</td>
     </tr>
     </tbody>
   </table>
 </template>
 
 <script setup lang="ts">
-import type {MapObject, ObjectType, WallMaterial, Category, OwnershipType} from '@/types'
+import type {MapObject } from '@/types'
+import {
+  objectTypeLabels,
+  objectWallMaterial,
+  objectCategory,
+  objectOwnershipType,
+} from '@/constants/ObjectLabels.ts';
 
 defineProps<{
   objects: MapObject[]
 }>()
-
-const objectTypeLabels: Record<ObjectType, string> = {
-  house: 'Дом',
-  land: 'Участок',
-}
-
-const objecteWallMaterial: Record<WallMaterial, string> = {
-  brick: 'Кирпич',
-  panel: 'Панель',
-  monolith: 'Монолит',
-  wood: 'Дерево'
-}
-
-const objectCategory: Record<Category, string> = {
-  agriculture: 'Сельхозназначение',
-  settlement: 'Населенные пункты',
-  industrial: 'Промышленное'
-}
-
-const objectOwnershipType: Record<OwnershipType, string> = {
-  state: 'Государственная',
-  municipal: 'Муниципальная',
-  private: 'Частная',
-}
 
 </script>
 
