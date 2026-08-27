@@ -11,8 +11,8 @@ export const useObjectsStore = defineStore('objects', () => {
   }
 
   // Удалить обьект
-  function removeObject(object: MapObject) {
-    objects.value = objects.value.filter(item => item.id !== object.id);
+  function removeObject(id: string) {
+    objects.value = objects.value.filter(item => item.id !== id);
   }
 
   // Получить обьект по ID

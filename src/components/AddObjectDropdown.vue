@@ -46,17 +46,17 @@ function selectObject(type: ObjectType) {
 }
 
 .addButton {
-  width: 50%;
+  width: clamp(55px, calc(20.405px + 10.811vw), 215px);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
+  gap: clamp(2px, calc(-1.027px + 0.946vw), 16px);
   padding: 10px 12px;
   background: #2563;
   border: 1px solid #2563;
   border-radius: 10px;
   cursor: pointer;
-  font-size: 18px;
+  font-size: clamp(10px, calc(8.27px + 0.541vw), 18px);
 }
 
 .addButton:hover {
@@ -64,7 +64,7 @@ function selectObject(type: ObjectType) {
 }
 
 .dropdown-content {
-  width: 50%;
+  width: clamp(75px, calc(47.973px + 8.446vw), 200px);
   display: flex;
   flex-direction: column;
   padding: 10px;
@@ -73,11 +73,11 @@ function selectObject(type: ObjectType) {
 
 .dropdown-item {
   width: 100%;
-  padding: 10px 12px;
-  font-size: 15px;
+  padding: clamp(7px, calc(6.351px + 0.203vw), 10px) clamp(6px, calc(4.703px + 0.405vw), 12px);
+  font-size: clamp(10px, calc(8.919px + 0.338vw), 15px);
   cursor: pointer;
   border: 1px solid #2563;
-  border-radius: 8px;
+  border-radius: clamp(3px, calc(1.919px + 0.338vw), 8px);
 }
 
 .dropdown-item:hover {

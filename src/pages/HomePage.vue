@@ -4,7 +4,9 @@
                @submit="submitForm"
                :is-form-open="isFormOpen"
                :object-type="selectedObjectType"
-               @select-object-row="handleSelectObjectRow"/>
+               @select-object-row="handleSelectObjectRow"
+               @toggle-object-visibility="handleToggleObjectVisibility"
+  />
   <MapView ref="mapRef" @drawing-finished="handleDrawingFinished"/>
 </template>
 
@@ -84,6 +86,13 @@ function cancelForm() {
 // при выборе строки в таблице - центрируем карту на объекте
 function handleSelectObjectRow(id: string) {
   mapRef.value.centerMapOnObject(id);
+}
+
+// видимость элемента на карте
+function handleToggleObjectVisibility (id: string) {
+  console.log('toggle');
+  objectsStore.toggleObjectVisibility(id);
+  mapRef.value.handleToggleObjectVisibility(id);
 }
 
 </script>

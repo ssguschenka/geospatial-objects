@@ -31,7 +31,7 @@
       <td>{{
           object.wallMaterial
             ? objectWallMaterial[object.wallMaterial]
-            : '—'
+            : '-'
         }}</td>
 
       <td>{{
@@ -66,7 +66,7 @@ defineProps<{
 <style scoped>
 
 table {
-  width: 70%;
+  width: 100%;
   border-collapse: collapse;
   flex-shrink: 0;;
 }
@@ -75,7 +75,7 @@ table, th, td {
   border: 1px solid #1f3436;
   padding: 8px;
   text-align: left;
-  font-size: 1.1em;
+  font-size: clamp(10px, calc(8.919px + 0.338vw), 15px);
   font-family: Roboto, sans-serif;
 }
 

@@ -6,8 +6,17 @@
         v-if="selectedObject"
         :object="selectedObject"
         @close="closeDialog"
+        @delete="handleDeleteRequest"
       />
     </dialog>
+
+    <dialog ref="dialogDelete" class="dialog-delete">
+      <ConfirmDeleteDialog
+        @delete="deleteObject"
+        @cancel="cancelDelete"
+      />
+    </dialog>
+
   </div>
 </template>
 
@@ -17,20 +26,41 @@ import { watch } from 'vue'
 import View from 'ol/View'
 import Map from 'ol/Map'
 import TileLayer from 'ol/layer/Tile'
-import OSM from 'ol/source/OSM'
 import {Feature} from "ol";
 import {Geometry} from "ol/geom";
 import DetailsObjectDialog from "./DetailsObjectDialog.vue"
+import ConfirmDeleteDialog from "./ConfirmDeleteDialog.vue"
 
 import { useDrawing } from "@/composables/useDrawig.ts";
 import 'ol/ol.css'
 import type { ObjectType, MapObject } from "@/types.ts";
 import {fromLonLat} from "ol/proj";
 import {useObjectsStore} from "@/stores/objects.ts";
+import XYZ from "ol/source/XYZ";
 
 const mapContainer = ref<HTMLElement | null>(null);
 
 let map: Map | null = null;
+
+const {
+  drawLayer,
+  startObjectDrawing,
+  selectedFeature,
+  selectedObjectType,
+  cancelDrawing,
+  restoreObjectsOnMap,
+  centerOnObject,
+  deleteObjectFeature,
+  updateObjectsVisibility
+} = useDrawing();
+
+const selectedObject = ref<MapObject | null>(null);
+const dialog = ref<HTMLDialogElement | null>(null);
+const objectStore = useObjectsStore();
+let isDrawing = true;
+const dialogDelete = ref<HTMLDialogElement | null>(null);
+const isDeleteDialogOpen = ref(false);
+const objectToDeleteId = ref<string | null>(null);
 
 //закончили рисовать полигон
 const emit = defineEmits<{
@@ -42,21 +72,6 @@ const emit = defineEmits<{
   ]
 }>();
 
-const {
-  drawLayer,
-  startObjectDrawing,
-  selectedFeature,
-  selectedObjectType,
-  cancelDrawing,
-  restoreObjectsOnMap,
-  centerOnObject
-} = useDrawing();
-
-const selectedObject = ref<MapObject | null>(null);
-const dialog = ref<HTMLDialogElement | null>(null);
-const objectStore = useObjectsStore();
-
-
 onMounted(() => {
   if (!mapContainer.value) return
 
@@ -64,7 +79,9 @@ onMounted(() => {
     target: mapContainer.value,
     layers: [
       new TileLayer({
-        source: new OSM(),
+        source: new XYZ({
+          url: 'https://map47.lenreg.ru/osm_tiles2/{z}/{x}/{y}.png'
+        }),
       }),
       drawLayer,
     ],
@@ -73,7 +90,7 @@ onMounted(() => {
       zoom: 13,
     }),
   });
-  map.on('click', (event) => {
+  map.on('click', (event) => {  // клик по полигону на карте - отрытие диалогового окна
     map?.forEachFeatureAtPixel(event.pixel, (feature) => {
       const objectId = feature.get('objectId')
 
@@ -87,14 +104,6 @@ onMounted(() => {
   })
   restoreObjectsOnMap()
 });
-
-// Закрываем диалоговое окно
-const closeDialog = () => {
-  dialog.value?.close();
-  selectedObject.value = null;
-};
-
-let isDrawing = true;
 
 // функция рисования полигона, которая вызывается при клике на кнопку выбора обьекта(дом/участок)
 function startDrawing(type: ObjectType) {
@@ -128,16 +137,60 @@ function centerMapOnObject(id: string) {
   if (!map) {
     return;
   }
-
   centerOnObject(map, id);
 }
 
+// меняем видимость объекта на карте
+function handleToggleObjectVisibility() {
+  updateObjectsVisibility();
+}
 
-// делает доступной функции рисования и удаления полигона извне
+// Закрываем диалоговое окно
+const closeDialog = () => {
+  dialog.value?.close();
+  selectedObject.value = null;
+};
+
+// Клик удалить в диалоговом окне - открытие окна подтверждения
+function handleDeleteRequest (id: string) {
+  objectToDeleteId.value = id;
+
+  isDeleteDialogOpen.value = true;
+  dialogDelete.value?.showModal();
+}
+
+// Удаляем объект из хранилища и карты
+function deleteObject() {
+  if (!objectToDeleteId.value) {
+    return;
+  }
+
+  const id = objectToDeleteId.value;
+
+  objectStore.removeObject(id);
+  deleteObjectFeature(id);
+  isDeleteDialogOpen.value = false;
+  objectToDeleteId.value = null;
+
+  dialogDelete.value?.close();
+  dialog.value?.close();
+  selectedObject.value = null;
+}
+
+// закрываем окно подтверждения удаления
+function cancelDelete() {
+  isDeleteDialogOpen.value = false;
+  dialogDelete.value?.close();
+
+  objectToDeleteId.value = null;
+}
+
+// делает доступной функции рисования, центрирования и удаления полигона извне
 defineExpose({
   startDrawing,
   cancelObjectDrawing,
   centerMapOnObject,
+  handleToggleObjectVisibility
 });
 
 </script>
@@ -148,4 +201,11 @@ defineExpose({
   grid-row: 2;
   grid-column: 2;
 }
+
+dialog {
+  border: 1px #2b4649 solid;
+  padding: 10px;
+  border-radius: 15px;
+}
+
 </style>

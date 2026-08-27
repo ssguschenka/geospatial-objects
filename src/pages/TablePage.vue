@@ -56,16 +56,19 @@ const filteredObjects = computed(() => {
 .wrapper {
   grid-row: 2 / 3;
   grid-column: 1 / 3;
-  padding: 30px;
+  padding: clamp(15px, calc(11.757px + 1.014vw), 30px);
   display: flex;
-  align-items: center;
+  //align-items: center;
   flex-direction: column;
-  gap: 3em;
+  gap: clamp(15px, calc(11.757px + 1.014vw), 30px);
+  overflow-x: scroll;
+
 }
 
 .table-title {
   font-family: Roboto, sans-serif;
-  font-size: 2em;
+  font-size: 3em;
+  text-align: center;
 }
 
 .tabs {

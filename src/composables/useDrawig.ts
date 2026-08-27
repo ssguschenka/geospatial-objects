@@ -8,13 +8,64 @@ import {Feature} from "ol";
 import {Geometry} from "ol/geom";
 import GeoJSON from "ol/format/GeoJSON";
 import {useObjectsStore} from "@/stores/objects.ts";
+import Style from "ol/style/Style";
+import Fill from "ol/style/Fill";
+import Stroke from "ol/style/Stroke";
 
 // Функция с логикой рисования и удаления полигонов на карте
 export function useDrawing() {
+
+  const geoJson = new GeoJSON();
+  const objectsStore = useObjectsStore();
   const drawSource = new VectorSource();
+  let selectedMapObjectId: string | null = null;
+
+  // Обычный стиль для полигона
+  const defaultStyle = new Style({
+    fill: new Fill({
+      color: "rgb(227 242 246 / 0.51)",
+    }),
+    stroke: new Stroke({
+      color: "#5da2c4",
+      width: 2,
+    }),
+  });
+
+  // Стиль для выбранного полигона
+  const selectedStyle  = new Style({
+    stroke: new Stroke({
+      color: 'rgb(37 105 54 / 0.92)',
+      width: 2,
+    }),
+    fill: new Fill({
+      color: 'rgb(130 190 125 / 0.63)',
+    }),
+  })
 
   const drawLayer = new VectorLayer({
     source: drawSource,
+    style: (feature) => {
+      const objectId = feature.get("objectId");
+
+      // Новый полигон, который ещё не сохранён
+      if (!objectId) {
+        return defaultStyle;
+      }
+
+      const object = objectsStore.getObjectById(objectId);
+      // Скрываем полигон если visible - false
+      if (!object?.visible) {
+        return undefined;
+      }
+
+      // Выбранный объект
+      if (objectId === selectedMapObjectId) {
+        return selectedStyle;
+      }
+
+      // Обычный объект
+      return defaultStyle;
+    },
   });
 
   let draw: Draw | null = null;
@@ -47,7 +98,6 @@ export function useDrawing() {
 
     // при завершении рисования полигона - удаляем draw
     newDraw.on("drawend", (event) => {
-      console.log("нарисован", event.feature);
       selectedFeature.value = event.feature as Feature<Geometry>; //нарисованный обьект
 
       map.removeInteraction(newDraw);
@@ -62,10 +112,6 @@ export function useDrawing() {
       selectedFeature.value = null;
     }
   }
-
-
-  const geoJson = new GeoJSON();
-  const objectsStore = useObjectsStore();
 
   // восстанавливаем нарисованные полигоны на карте
   function restoreObjectsOnMap() {
@@ -85,14 +131,20 @@ export function useDrawing() {
 
   // Центрируем карту на выбранном объекте в таблице
   function centerOnObject(map: Map, id: string) {
+
     const feature = drawSource.getFeatures().find(
       feature => feature.get("objectId") === id
     );
 
     if (!feature) {
       console.log("Полигон не найден:", id);
-      return;
+      return
     }
+
+    // Запоминаем выбранный полигон
+    selectedMapObjectId = id;
+
+    drawSource.changed();
 
     const geometry = feature.getGeometry();
 
@@ -107,6 +159,18 @@ export function useDrawing() {
     });
   }
 
+  function updateObjectsVisibility() {
+    drawSource.changed();
+  }
+
+  // Удаляем полигон
+  function deleteObjectFeature(id: string) {
+    const feature = drawSource.getFeatures().find(feature => feature.get("objectId") === id);
+
+    if(!feature) return
+    drawSource.removeFeature(feature);
+  }
+
   return {
     drawLayer,
     startObjectDrawing,
@@ -114,7 +178,9 @@ export function useDrawing() {
     selectedObjectType,
     cancelDrawing,
     restoreObjectsOnMap,
-    centerOnObject
+    centerOnObject,
+    deleteObjectFeature,
+    updateObjectsVisibility
   }
 }
 

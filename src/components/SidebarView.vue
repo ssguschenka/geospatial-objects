@@ -2,7 +2,7 @@
   <div class="panel">
   <AddObjectDropdown @select="handleObjectSelect"/>
     <DynamicObjectForm v-if="isFormOpen && objectType" :object-type="objectType"  @submit="handleSubmit" @cancel="handleCancel" />
-    <Table  @select="handleSelectRow"/>
+    <TableObjects  @select="handleSelectRow" @toggleVisibility="handleToggleObjectVisibility"/>
   </div>
 </template>
 
@@ -10,14 +10,14 @@
 import AddObjectDropdown  from "./AddObjectDropdown.vue"
 import type { ObjectType, ObjectData } from "@/types.ts";
 import DynamicObjectForm from "@/components/DynamicObjectForm.vue";
-import Table from "@/components/Table.vue";
+import TableObjects from "@/components/TableObjects.vue";
 
 defineProps<{
   isFormOpen: boolean;
   objectType: ObjectType | null;
 }>()
 
-const emit = defineEmits<{selectObject: [type: ObjectType]; cancel: []; submit: [data: ObjectData]; selectObjectRow: [id: string]}>();
+const emit = defineEmits<{selectObject: [type: ObjectType]; cancel: []; submit: [data: ObjectData]; selectObjectRow: [id: string]; toggleObjectVisibility: [id: string]}>();
 
 // выбрали тип участка
 function handleObjectSelect (type: ObjectType) {
@@ -40,6 +40,11 @@ const handleCancel = () => {
   emit("cancel");
 }
 
+// Изменяем видимость обьекта
+const handleToggleObjectVisibility = (id: string) => {
+  emit("toggleObjectVisibility", id);
+}
+
 </script>
 
 <style scoped>
@@ -51,7 +56,7 @@ const handleCancel = () => {
   grid-row: 2 / 3;
   grid-column: 1;
   min-width: 0;
-  padding: 20px;
+  padding: clamp(5px, calc(1.757px + 1.014vw), 20px);
 }
 
 </style>

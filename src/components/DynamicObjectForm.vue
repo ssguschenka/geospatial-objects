@@ -150,10 +150,10 @@ const handleCancel =  () => {
   inline-size: 100%;
   gap: 1.3em;
   border: 1px solid #1f3436;
-  border-radius: 15px;
-  padding: 1.3em;
+  border-radius: clamp(6px, calc(4.054px + 0.608vw), 15px);
+  padding: clamp(5px, calc(1.757px + 1.014vw), 20px);
   font-family: "Roboto", sans-serif;
-  font-size: 1.2em;
+  font-size: clamp(8px, calc(6.919px + 0.338vw), 13px);
   background-color: #fff;
 }
 
@@ -162,7 +162,7 @@ const handleCancel =  () => {
   inline-size: 100%;
   font-size: 1.7em;
   margin: 0;
-  padding: 0 0 0.7em 0;
+  padding-bottom: 0.7em;
 }
 
 .form-field {
@@ -222,7 +222,7 @@ const handleCancel =  () => {
 }
 
 .form-btn {
-  inline-size: 25%;
+  inline-size: clamp(60px, calc(44.865px + 4.73vw), 130px);
   font-size: 1em;
   padding: 2% 5%;
   border-radius: 15px;

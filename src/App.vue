@@ -25,11 +25,11 @@ import { RouterLink, RouterView } from 'vue-router'
 .nav-link {
   text-decoration: none;
   color: #1f3436;
-  padding: 6px 20px;
+  padding: clamp(2px, calc(1.135px + 0.27vw), 6px) clamp(8px, calc(5.405px + 0.811vw), 20px);
   border-radius: 5px;
   border: 1px solid #2563;
   font-family: "Roboto", sans-serif;
-  font-size: 20px;
+  font-size: clamp(12px, calc(10.27px + 0.541vw), 20px);
 }
 
 .nav-link:hover {
