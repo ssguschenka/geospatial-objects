@@ -41,7 +41,6 @@ const selectedObjectId = ref<string | null>(null);
 
 // Клик на строку в таблице
 function selectRow(id: string) {
-  console.log(objectsStore.getObjectById(id))
   selectedObjectId.value = id;
   emit("select", id);
 }

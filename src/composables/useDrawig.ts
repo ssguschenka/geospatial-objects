@@ -12,7 +12,7 @@ import Style from "ol/style/Style";
 import Fill from "ol/style/Fill";
 import Stroke from "ol/style/Stroke";
 
-// Функция с логикой рисования и удаления полигонов на карте
+// Функция с логикой полигонов на карте
 export function useDrawing() {
 
   const geoJson = new GeoJSON();
@@ -79,7 +79,6 @@ export function useDrawing() {
    * @param type - тип выбранного обьекта
    */
   function startObjectDrawing(map: Map, type: ObjectType) {
-    console.log("выбран обьект", type);
     selectedObjectType.value = type; //запоминаем какой обьект рисуем
 
     //если draw уже был включен - удаляем его

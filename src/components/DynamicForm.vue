@@ -66,15 +66,16 @@
 <script setup lang="ts">
 import { computed, reactive } from "vue";
 import objectConfig from "../config/objectConfig.json"
-import type { ObjectType, ObjectConfig } from "@/types.ts";
-import {useObjectsStore} from "@/stores/objects.ts";
+import type { ObjectType, ObjectConfig, ObjectData } from "@/types.ts";
 
 const props = defineProps<{
   objectType: ObjectType,
+  validate?: (fieldName: string, value: unknown) => string | undefined;
+  initialData?: Record<string, unknown>;
 }>();
 
 const emit = defineEmits<{
-  submit: [data: Record<string, unknown>];
+  submit: [data: ObjectData];
   cancel: []
 }>();
 
@@ -84,11 +85,9 @@ const config = computed(() => {
 });
 
 //создаем рееактивный обьект формы- он пока пустой
-const formData = reactive<Record<string, unknown>>({});
+const formData = reactive<Record<string, unknown>>({...props.initialData});
 
 const errors = reactive<Record<string, string>>({});
-
-const objectStore = useObjectsStore();
 
 // Проверяем required, pattern и кадастровый номер на уникальность при submit
 const validateForm = () => {
@@ -119,9 +118,11 @@ const validateForm = () => {
       }
     }
 
-    // Проверяем, что кадастровый номер уникален
-    if(field.name === 'cadastralNumber' && objectStore.getObjectByCadastral(String(value))) {
-      errors[field.name] = 'Такой номер уже существует';
+    // Дополнительная проверка из родительского компонента
+    const customError = props.validate?.(field.name, value);
+
+    if (customError) {
+      errors[field.name] = customError;
       isValid = false;
     }
   }
@@ -147,7 +148,7 @@ const handleCancel =  () => {
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  inline-size: 100%;
+  inline-size: clamp(250px, calc(207.701px + 13.218vw), 480px);
   gap: 1.3em;
   border: 1px solid #1f3436;
   border-radius: clamp(6px, calc(4.054px + 0.608vw), 15px);

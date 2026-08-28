@@ -45,7 +45,17 @@ export const useObjectsStore = defineStore('objects', () => {
     object.visible = !object.visible
   }
 
+  type UpdateObjectData = Partial<Omit<MapObject, 'id' | 'type'>>;
 
+  function updateObject(id: string, data: UpdateObjectData) {
+    const object = objects.value.find(
+      object => object.id === id
+    );
 
-  return { objects, addObject, removeObject, toggleObjectVisibility, getObjectById, getObjectByCadastral}
+    if (!object) return;
+
+    Object.assign(object, data);
+  }
+
+  return { objects, addObject, removeObject, toggleObjectVisibility, getObjectById, getObjectByCadastral, updateObject }
 })

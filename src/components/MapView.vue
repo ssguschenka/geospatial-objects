@@ -3,10 +3,19 @@
 
     <dialog ref="dialog">
       <DetailsObjectDialog
-        v-if="selectedObject"
+        v-if="selectedObject && !isEditMode"
         :object="selectedObject"
         @close="closeDialog"
         @delete="handleDeleteRequest"
+        @update="handleUpdateObject"
+      />
+
+      <DynamicForm
+        v-else-if="selectedObject && isEditMode"
+        :object-type="selectedObject.type"
+        :initial-data="selectedObject"
+        @submit="handleUpdate"
+        @cancel="handleCancelEdit"
       />
     </dialog>
 
@@ -30,6 +39,7 @@ import {Feature} from "ol";
 import {Geometry} from "ol/geom";
 import DetailsObjectDialog from "./DetailsObjectDialog.vue"
 import ConfirmDeleteDialog from "./ConfirmDeleteDialog.vue"
+import DynamicForm from "@/components/DynamicForm.vue";
 
 import { useDrawing } from "@/composables/useDrawig.ts";
 import 'ol/ol.css'
@@ -61,6 +71,7 @@ let isDrawing = true;
 const dialogDelete = ref<HTMLDialogElement | null>(null);
 const isDeleteDialogOpen = ref(false);
 const objectToDeleteId = ref<string | null>(null);
+const isEditMode = ref(false);
 
 //закончили рисовать полигон
 const emit = defineEmits<{
@@ -177,6 +188,28 @@ function deleteObject() {
   selectedObject.value = null;
 }
 
+// открываем окно редактирования
+const handleUpdateObject = () => {
+  isEditMode.value = true;
+}
+
+// сохраняем изменения в стор
+const handleUpdate = (data: Record<string, unknown>): void => {
+  if (!selectedObject.value) return;
+
+  objectStore.updateObject(
+    selectedObject.value.id,
+    data
+  );
+
+  isEditMode.value = false;
+};
+
+// закрываем окно редактирования
+const handleCancelEdit = () => {
+  isEditMode.value = false;
+};
+
 // закрываем окно подтверждения удаления
 function cancelDelete() {
   isDeleteDialogOpen.value = false;
@@ -203,7 +236,7 @@ defineExpose({
 }
 
 dialog {
-  border: 1px #2b4649 solid;
+  border: none;
   padding: 10px;
   border-radius: 15px;
 }

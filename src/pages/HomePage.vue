@@ -46,7 +46,6 @@ function handleDrawingFinished(payload: {
   isFormOpen.value = true;
 }
 
-
 // сохраняем данные формы в стор
 function submitForm(data: ObjectData) {
   if (!selectedFeature.value || !selectedObjectType.value) {
@@ -90,7 +89,6 @@ function handleSelectObjectRow(id: string) {
 
 // видимость элемента на карте
 function handleToggleObjectVisibility (id: string) {
-  console.log('toggle');
   objectsStore.toggleObjectVisibility(id);
   mapRef.value.handleToggleObjectVisibility(id);
 }

@@ -12,7 +12,7 @@
     <p>Разрешённое использование: {{ object.allowedUsage ?? '-' }}</p>
     <p>Форма собственности: {{ object.ownershipType ? objectOwnershipType[object.ownershipType] : '-' }}</p>
     <div class="btn-container">
-      <button class="change">
+      <button class="change" @click="emit('update')">
         Изменить
       </button>
       <button class="delete" @click="emit('delete', object.id)">
@@ -31,7 +31,7 @@ defineProps<{
   object: MapObject,
 }>();
 
-const emit = defineEmits<{close: []; delete: [id: string]}>();
+const emit = defineEmits<{close: []; delete: [id: string]; update: []}>();
 
 </script>
 

@@ -1,7 +1,7 @@
 <template>
   <div class="panel">
-  <AddObjectDropdown @select="handleObjectSelect"/>
-    <DynamicObjectForm v-if="isFormOpen && objectType" :object-type="objectType"  @submit="handleSubmit" @cancel="handleCancel" />
+    <AddObjectDropdown @select="handleObjectSelect"/>
+    <DynamicForm v-if="isFormOpen && objectType" :validate="validateObjectField" :object-type="objectType"  @submit="handleSubmit" @cancel="handleCancel" />
     <TableObjects  @select="handleSelectRow" @toggleVisibility="handleToggleObjectVisibility"/>
   </div>
 </template>
@@ -9,8 +9,9 @@
 <script setup lang="ts">
 import AddObjectDropdown  from "./AddObjectDropdown.vue"
 import type { ObjectType, ObjectData } from "@/types.ts";
-import DynamicObjectForm from "@/components/DynamicObjectForm.vue";
+import DynamicForm from "@/components/DynamicForm.vue";
 import TableObjects from "@/components/TableObjects.vue";
+import { useObjectsStore } from "@/stores/objects.ts";
 
 defineProps<{
   isFormOpen: boolean;
@@ -31,7 +32,6 @@ function handleSelectRow (id: string) {
 
 // Сохраняем обьект в форме
 const handleSubmit = (data: ObjectData) => {
-  console.log("handleSubmit", data);
   emit("submit", data);
 }
 
@@ -43,6 +43,19 @@ const handleCancel = () => {
 // Изменяем видимость обьекта
 const handleToggleObjectVisibility = (id: string) => {
   emit("toggleObjectVisibility", id);
+}
+
+const objectStore = useObjectsStore();
+
+const validateObjectField = (
+  fieldName: string,
+  value: unknown
+) => {
+  if(fieldName === "cadastralNumber" && objectStore.getObjectByCadastral(String(value))) {
+    return "Такой номер уже существует";
+  }
+
+  return undefined;
 }
 
 </script>
