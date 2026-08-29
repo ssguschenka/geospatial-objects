@@ -4,8 +4,6 @@ import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import {vMaska} from "maska/vue";
 import { createVuetify } from 'vuetify';
-// import 'vuetify/styles';
-
 
 import App from './App.vue'
 import router from './router'

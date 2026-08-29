@@ -112,7 +112,7 @@ export function useDrawing() {
       map.removeInteraction(newDraw);
       draw = null;
     });
-  };
+  }
 
   //  Редактирование полигона
   modify.on('modifyend', (event) => {
