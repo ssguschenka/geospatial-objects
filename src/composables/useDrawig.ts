@@ -11,6 +11,8 @@ import {useObjectsStore} from "@/stores/objects.ts";
 import Style from "ol/style/Style";
 import Fill from "ol/style/Fill";
 import Stroke from "ol/style/Stroke";
+import Modify from 'ol/interaction/Modify';
+import Collection from 'ol/Collection';
 
 // Функция с логикой полигонов на карте
 export function useDrawing() {
@@ -68,6 +70,14 @@ export function useDrawing() {
     },
   });
 
+  const modifyFeatures = new Collection<Feature<Geometry>>();
+
+  const modify = new Modify({
+    source: drawSource,
+    features: modifyFeatures,
+  });
+
+
   let draw: Draw | null = null;
 
   const selectedFeature = ref<Feature<Geometry> | null>(null);
@@ -102,6 +112,44 @@ export function useDrawing() {
       map.removeInteraction(newDraw);
       draw = null;
     });
+  };
+
+  //  Редактирование полигона
+  modify.on('modifyend', (event) => {
+    event.features.forEach((feature) => {
+      const objectId = feature.get('objectId');
+
+      if (!objectId) return;
+
+      const geometry = feature.getGeometry();
+
+      if (!geometry) return;
+
+      const geometryGeoJson = geoJson.writeGeometry(geometry);
+
+      objectsStore.updateObject(objectId, {
+        geometry: geometryGeoJson,
+      });
+    });
+  });
+
+  // Получаем объект по id для редактирования
+  function getObjectFeature(id: string) {
+    return drawSource
+      .getFeatures()
+      .find(feature => feature.get('objectId') === id);
+  }
+
+  function startPolygonModify(map: Map, feature: Feature<Geometry>) {
+    modifyFeatures.clear();
+    modifyFeatures.push(feature);
+
+    map.addInteraction(modify);
+  }
+
+  function stopPolygonModify(map: Map) {
+    map.removeInteraction(modify);
+    modifyFeatures.clear();
   }
 
   // удаление полигона с карты
@@ -114,6 +162,8 @@ export function useDrawing() {
 
   // восстанавливаем нарисованные полигоны на карте
   function restoreObjectsOnMap() {
+    drawSource.clear();
+
     objectsStore.objects.forEach((object) => {
       const feature = new Feature({
         geometry: geoJson.readGeometry(object.geometry),
@@ -179,7 +229,10 @@ export function useDrawing() {
     restoreObjectsOnMap,
     centerOnObject,
     deleteObjectFeature,
-    updateObjectsVisibility
+    updateObjectsVisibility,
+    startPolygonModify,
+    stopPolygonModify,
+    getObjectFeature
   }
 }
 

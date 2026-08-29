@@ -8,6 +8,7 @@
         @close="closeDialog"
         @delete="handleDeleteRequest"
         @update="handleUpdateObject"
+        @update-polygon="handleUpdatePolygon"
       />
 
       <DynamicForm
@@ -25,6 +26,8 @@
         @cancel="cancelDelete"
       />
     </dialog>
+
+    <UpdatePolygon v-if="isUpdatePolygon" @done="handleStopUpdatePolygon"/>
 
   </div>
 </template>
@@ -47,6 +50,7 @@ import type { ObjectType, MapObject } from "@/types.ts";
 import {fromLonLat} from "ol/proj";
 import {useObjectsStore} from "@/stores/objects.ts";
 import XYZ from "ol/source/XYZ";
+import UpdatePolygon from "@/components/UpdatePolygon.vue";
 
 const mapContainer = ref<HTMLElement | null>(null);
 
@@ -61,7 +65,10 @@ const {
   restoreObjectsOnMap,
   centerOnObject,
   deleteObjectFeature,
-  updateObjectsVisibility
+  updateObjectsVisibility,
+  startPolygonModify,
+  getObjectFeature,
+  stopPolygonModify
 } = useDrawing();
 
 const selectedObject = ref<MapObject | null>(null);
@@ -72,6 +79,7 @@ const dialogDelete = ref<HTMLDialogElement | null>(null);
 const isDeleteDialogOpen = ref(false);
 const objectToDeleteId = ref<string | null>(null);
 const isEditMode = ref(false);
+const isUpdatePolygon = ref(false);
 
 //закончили рисовать полигон
 const emit = defineEmits<{
@@ -218,6 +226,27 @@ function cancelDelete() {
   objectToDeleteId.value = null;
 }
 
+const handleUpdatePolygon = () => {
+  if (!selectedObject.value || !map) return;
+
+  const feature = getObjectFeature(selectedObject.value.id);
+
+  if (!feature) return;
+
+  dialog.value?.close();
+
+  isUpdatePolygon.value = true;
+  startPolygonModify(map, feature);
+};
+
+const handleStopUpdatePolygon = () => {
+  dialog.value?.showModal();
+  isUpdatePolygon.value = false;
+
+  if(!map) return;
+  stopPolygonModify(map);
+}
+
 // делает доступной функции рисования, центрирования и удаления полигона извне
 defineExpose({
   startDrawing,
@@ -233,6 +262,7 @@ defineExpose({
   width: 100%;
   grid-row: 2;
   grid-column: 2;
+  position: relative;
 }
 
 dialog {

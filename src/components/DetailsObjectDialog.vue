@@ -13,7 +13,10 @@
     <p>Форма собственности: {{ object.ownershipType ? objectOwnershipType[object.ownershipType] : '-' }}</p>
     <div class="btn-container">
       <button class="change" @click="emit('update')">
-        Изменить
+        Изменить параметры
+      </button>
+      <button class="change" @click="emit('updatePolygon')">
+        Изменить полигон
       </button>
       <button class="delete" @click="emit('delete', object.id)">
         Удалить
@@ -31,7 +34,7 @@ defineProps<{
   object: MapObject,
 }>();
 
-const emit = defineEmits<{close: []; delete: [id: string]; update: []}>();
+const emit = defineEmits<{close: []; delete: [id: string]; update: []; updatePolygon: []}>();
 
 </script>
 
@@ -63,8 +66,8 @@ button {
   border: none;
   border-radius: 10px;
   font-family: Roboto, sans-serif;
-  font-size: clamp(14px, calc(12.703px + 0.405vw), 20px);
-  padding: 3px 30px;
+  font-size: clamp(10px, calc(8.897px + 0.345vw), 16px);
+  padding: 8px clamp(5px, calc(0.402px + 1.437vw), 30px);
   transition: box-shadow 0.3s;
 }
 

@@ -1,5 +1,3 @@
-import type { Geometry } from 'geojson'
-
 export type ObjectType = "house" | "land";
 
 export type WallMaterial = "brick" | "panel" | "monolith" | "wood";
@@ -43,7 +41,7 @@ export type ObjectData = {
 export type MapObject = ObjectData & {
   id: string;
   type: ObjectType;
-  geometry: Geometry;
+  geometry: string;
   visible: boolean;
 }
 
